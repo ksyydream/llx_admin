@@ -1,0 +1,1 @@
+SELECT * FROM `bao_users` WHERE ( `user_id` = 122 ) LIMIT 1  
