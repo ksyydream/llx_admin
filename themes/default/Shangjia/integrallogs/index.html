@@ -1,0 +1,37 @@
+<include  file='public:header'/>
+<div class="sjgl_lead">
+    <ul>
+        <li><a href="">粉丝</a>><a>积分日志</a></li>
+    </ul>
+</div>
+<div class="tuan_content">
+
+    <form  target="baocms_frm" method="post">
+        <div class="tableBox">
+            <table class="tuan_table" width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr style="background-color:#eee;">
+                    <td class="w50">ID</td>
+                    <td>秀币</td>
+                    <td>说明</td>
+                    <td>使用时间</td>
+                    <td>使用IP</td>
+                </tr>
+                <foreach name="list" item="var">
+                    <tr>
+                        <td><{$var.log_id}></td>
+                        <td><{$var.integral}></td>
+                        <td><{$var.intro}></td>
+                        <td><{$var.create_time|date='Y-m-d H:i:s',###}></td>
+                        <td><{$var.create_ip}></td>
+                    </tr>
+                </foreach>
+            </table>
+
+
+
+            <{$page}>
+        </div>
+    </form>
+</div>
+</div>
+<include  file='public:footer'/>

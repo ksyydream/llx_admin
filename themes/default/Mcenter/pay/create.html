@@ -1,0 +1,176 @@
+<include  file='public:header'/>
+
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('life/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+	<div class="top-title">
+		创建支付
+	</div>
+</header>
+
+<form class="fabu-form" method="post"  target="x-frame" action="<{:U('store/pay/create')}>">
+
+
+	<div class="blank-10 bg border-top"></div>
+
+
+
+	<div class="row">
+		<div class="line">
+			<span class="x3">会员手机</span>
+		<span class="x9">
+			<input type="number" class="text-input" name="data[mobile]" id="mobile" onblur="get_zp()"/>
+		</span>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="line">
+			<span class="x3">消费金额</span>
+		<span class="x9">
+			<input type="number" class="text-input" name="data[total]" id="total" onblur="yhk_dikou()"/>
+		</span>
+		</div>
+	</div>
+
+	<div id="yhk">
+
+	</div>
+
+	<div class="row">
+		<div class="line">
+			<span class="x3">备注</span>
+		<span class="x9">
+			<input type="text" class="text-input" name="data[remark]" />
+		</span>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="line">
+			<span class="x3">赠品消费</span>
+		<span class="x9">
+		</span>
+		</div>
+	</div>
+
+	<div id="zp_info">
+
+	</div>
+
+
+	<div class="container">
+		<div class="blank-30"></div>
+		<button  type="submit" class="button button-block button-big bg-dot" onclick="return check_qty()">确认保存</button>
+		<div class="blank-30"></div>
+	</div>
+
+</form>
+
+<include  file='public:footer'/>
+
+<script>
+	function get_zp(){
+		if(!$("#mobile").val()){
+			alert('请输入手机号码');
+			return false;
+		}
+		$.getJSON("http://wap.51loveshow.com/store/pay/get_zp/mobile/"+$("#mobile").val(),function(data){
+			if(data != -1 && data['zp']['<{$shop_id}>']){
+				content = '<div class="row">';
+				content += '<div class="line">';
+				content += '<span class="x6" style="color:#999">';
+				content += '赠品';
+				content += '</span>';
+				content += '<span class="x3">';
+				content += '数量';
+				content += '</span>';
+				content += '<span class="x3">';
+				content += '本次消费';
+				content += '</span>';
+				content += '</div>';
+				content += '</div>';
+
+				for(var key in data['zp']['<{$shop_id}>']){
+					content += '<div class="row">';
+					content += '<div class="line">';
+					content += '<span class="x6" style="color:#999"><input type="hidden" name="desc[]" value="'+key+'">';
+					content += key;
+					content += '</span>';
+					content += '<span class="x3">';
+					content += data['zp']['<{$shop_id}>'][key];
+					content += '</span>';
+					content += '<span class="x3">';
+					content += '<input type="number" class="text-input" name="qty[]" />';
+					content += '</span>';
+					content += '</div>';
+					content += '</div>';
+				}
+
+				$("#zp_info").html(content)
+			}else{
+				$("#zp_info").html('')
+			}
+
+
+			if(data != -1){
+				window.yhk = data['yhk']
+
+			}
+
+		})
+	}
+
+	function check_qty(){
+		err = 0
+		$("[name='qty[]']").each(function(){
+			limit_qty = parseInt($(this).parent().prev().html())
+			qty = parseInt($(this).val());
+			if(qty > limit_qty){
+
+				err++;
+			}
+		})
+
+		if(err > 0){
+			alert('赠品消费数量不能大于赠品数量');
+			return false;
+		}
+	}
+
+	function yhk_dikou(){
+		if(window.yhk){
+			total = parseInt($("#total").val()) ? parseInt($("#total").val()) : 0;
+			if(window.yhk['<{$shop_id}>'] > 0){
+				if(parseInt(total/100) * parseInt('<{$yhk1}>')  <= window.yhk['<{$shop_id}>']){
+					allow_yhk = parseInt(total/100) * parseInt('<{$yhk1}>')
+				}else{
+					allow_yhk = window.yhk['<{$shop_id}>']
+				}
+			}else{
+				total_yhk = 0;
+				for(var key in window.yhk){
+					total_yhk += window.yhk[key]
+				}
+				if(parseInt(total/100) * parseInt('<{$yhk2}>')  <= total_yhk){
+					allow_yhk = parseInt(total/100) * parseInt('<{$yhk2}>')
+				}else{
+					allow_yhk = total_yhk
+				}
+			}
+			yhk_html = '<div class="row">'
+			yhk_html += '<div class="line">'
+			yhk_html += '<span class="x3">优惠券抵扣</span>'
+			yhk_html += '<span class="x9">'
+			yhk_html += '<input type="hidden" name="data[yhk]" value="'+ allow_yhk +'">'
+			yhk_html += '-'+allow_yhk
+			yhk_html += '</span>'
+			yhk_html += '</div>'
+			yhk_html += '</div>'
+			$("#yhk").html(yhk_html)
+		}else{
+			$("#yhk").html('')
+		}
+	}
+</script>

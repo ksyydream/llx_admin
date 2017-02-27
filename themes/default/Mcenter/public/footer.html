@@ -1,0 +1,74 @@
+
+<div class="blank-20"></div>
+	
+	<!--  <div style="position: fixed;top:60%;left:85%;">
+	<a href="tel:4007731377" target="_blank">
+	<img  width="40" height="80"border="0" src="http://wap.51loveshow.com/themes/default/Mcenter/member/1234.png" alt="���������ҷ���Ϣ" title="���������ҷ���Ϣ"/>
+	</a>
+	</div>
+
+
+	<div style="position: fixed;top:75%;left:85%;">
+	<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=2399233569&site=qq&menu=yes">
+	<img  width="40" height="80"border="0" src="http://wap.51loveshow.com/themes/default/Mcenter/member/123.png" alt="���������ҷ���Ϣ" title="���������ҷ���Ϣ"/>
+	</a>
+	</div>-->
+
+<!--<if condition="$CONFIG[other][footer] eq 1"> -->
+	<!---->
+    <!--<footer class="foot-fixed">-->
+  <!---->
+    <!--<a class="foot-item <if condition="($ctl eq 'index') AND ($act neq 'more')">active</if>" href="<{:u('mobile/index/index')}>">		-->
+    <!--<span class="icon icon-home"></span>-->
+    <!--<span class="foot-label">首页</span>-->
+    <!--</a>-->
+   <!---->
+    <!---->
+    <!--<a class="foot-item   <if condition="($ctl eq 'tuan') || ($ctl eq 'goods')  || ($ctl eq 'eleorder')  || ($ctl eq 'ding') ">active</if>" href="      <{:LinkTo('tuan/index')}>">			-->
+    <!--<span class="icon icon-cart-plus"></span><span class="foot-label">订单</span></a>-->
+    <!---->
+     <!--<a class="foot-item  <if condition="($ctl eq 'tuancode')">active</if>" href="<{:u('mcenter/tuancode/index')}>">			-->
+    <!--<span class="icon icon-tags"></span><span class="foot-label">抢购�?/span></a>-->
+    <!---->
+    <!---->
+    <!---->
+    <!--<a class="foot-item  <if condition="($ctl eq 'message') ||($act eq 'xiaoxizhongxin')">active</if>" href="<{:u('mcenter/message/someone')}>">			-->
+    <!--<span class="icon icon-volume-up"></span><span class="foot-label">消息</span></a>-->
+    <!---->
+    <!--<a class="foot-item  <if condition="($ctl eq 'member') || ($ctl eq 'logs') || ($ctl eq 'cash') ||($act eq 'zijinguanli')">active</if>" href="<{:u('mcenter/member/index')}>">-->
+    <!--<span class="icon icon-user"></span><span class="foot-label">会员中心</span></a>-->
+    <!---->
+   <!---->
+    <!--</footer>-->
+<!--</if>-->
+
+
+<footer class="foot-fixed">
+
+    <a class="foot-item <if condition="($ctl eq 'mall') AND ($act neq 'more')">active</if>" href="<{:u('mobile/mall/index')}>">
+    <span class="icon icon-home"></span>
+    <span class="foot-label">首页</span>
+    </a>
+
+
+    <a class="foot-item   <if condition="($ctl eq 'tuan') || ($ctl eq 'goods')  || ($ctl eq 'eleorder')  || ($ctl eq 'ding') ">active</if>" href="<{:LinkTo('goods/index')}>">
+    <span class="icon icon-cart-plus"></span><span class="foot-label">我的订单</span></a>
+
+    <a class="foot-item  <if condition="($ctl eq 'pay')">active</if>" href="<{:U('pay/index')}>">
+    <span class="icon icon-tags"></span><span class="foot-label">优惠买单</span></a>
+
+
+
+    <a class="foot-item  <if condition="($ctl eq 'message') ||($act eq 'xiaoxizhongxin')">active</if>" href="<{:u('mcenter/message/someone')}>">
+    <span class="icon icon-volume-up"></span><span class="foot-label">消息</span></a>
+
+    <a class="foot-item  <if condition="($ctl eq 'member') || ($ctl eq 'logs') || ($ctl eq 'cash') ||($act eq 'zijinguanli')">active</if>" href="<{:u('mcenter/member/index')}>">
+    <span class="icon icon-user"></span><span class="foot-label">会员中心</span></a>
+
+
+</footer>
+
+<iframe id="x-frame" name="x-frame" style="display:none;">
+</iframe>
+</body>
+</html>

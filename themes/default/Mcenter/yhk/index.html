@@ -1,0 +1,68 @@
+<include file="public:header"/>
+<header class="top-fixed bg-yellow bg-inverse">
+	<div class="top-back">
+		<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+	</div>
+		<div class="top-title">
+			优惠卡
+		</div>
+	<div class="top-signed">
+		<include file="public:message"/>
+	</div>
+</header>
+
+<style>
+	.button-toolbar .button-group {padding: 0 10px;}
+	.list-media-x { margin-top: 0.0rem;}
+	.list-media-x p {margin-top: 0.0rem;}
+</style>
+
+
+
+
+
+<div class="blank-10 bg"></div>
+<div class="list-media-x" id="list-media">
+
+	<ul>
+
+		<foreach name="yhk" item="var">
+			<li class="line ">
+				<dt><a class="x8">商家：<{$var.shop_name}> (商家ID:<{$var.shop_id}>)</a><a class="x4 text-right" style="color: red">余额:<{$var.yhk}></a></dt>
+
+				<dd class="zhong">
+					<div class="x6">
+						<img src="__ROOT__/attachs/<{$var.logo}>">
+					</div>
+					<if condition="$var['zp']">
+						<div class="x6">
+							<p>赠品</p>
+							<foreach name="var.zp" item="row">
+								<p><{$key}> x <{$row}></p>
+							</foreach>
+						</div>
+					</if>
+				</dd>
+
+				<dl>
+					<p class="text-right x12">
+						<a class="button button-small bg-dot margin-top" href="<{:U('yhk/share',array('shop_id'=>$var['shop_id']))}>">分销</a>
+					</p>
+				</dl>
+			</li>
+
+			<div class="blank-10 bg"></div>
+		</foreach>
+	</ul>
+</div>
+
+<div class="blank-20"></div>
+
+
+
+
+<include  file='public:footer'/>
+
+
+    
+   

@@ -1,0 +1,106 @@
+<include file='public:header'/>
+	<header class="top-fixed bg-yellow bg-inverse">
+		<div class="top-back">
+			<a class="top-addr" href="<{:U('index/index')}>"><i class="icon-angle-left"></i></a>
+		</div>
+		<div class="top-title">
+			优惠买单
+		</div>
+		<div class="top-share">
+		</div>
+	</header>
+<style>
+.button-toolbar .button-group {padding: 0 10px;}
+.list-media-x { margin-top: 0.0rem;}
+.list-media-x p {margin-top: 0.0rem;}
+</style>
+
+
+
+
+
+<div class="blank-10 bg"></div>
+<div class="list-media-x" id="list-media">
+
+	<ul>
+
+<foreach name="list" item="var">
+<li class="line ">
+      <dt><a class="x3">ID：<{$var.id}></a><a class="x9 text-right">创建时间:<{$var.create_time|date='Y-m-d H:i',###}></a></dt>
+
+      <dd class="zhong">
+         <div class="12">
+            <p>商家：<{$var.shop_name}></p>
+            <p>消费金额：<{$var.total}></p>
+            <p>优惠券抵扣：-<{$var.yhk}></p>
+			 <if condition="$var['integral']">
+				 <p>使用秀币：<{$var.integral}>(抵扣:-<{:round($var['integral']/100,2)}>)</p>
+			 </if>
+            <p>备注：<{$var['remark']}></p>
+            <p>赠品消费：<{$var['keywords']}></p>
+			 <foreach name="var['zp']" item="row">
+			 <p><{$key}> x <{$row}></a></p>
+			 </foreach>
+		 </div>
+      </dd>
+
+      <dl>
+		  <p class="text-left x8">
+			  <a class="margin-top">实付:&nbsp;<font color="red"><{:round($var['total'] - $var['yhk'] - $var['integral']/100,2)}></font></a>
+			  <br>
+			  <if condition="$var['pay_time']">
+			  	<a class="margin-top">付款时间:&nbsp;<font color="#999"><{$var.create_time|date='Y-m-d H:i',###}></font></a>
+			  </if>
+		  </p>
+
+         <p class="text-right x4">
+         <eq name="var.status" value="1">
+         	<a class="button button-small bg-gray margin-top" href="<{:U('pay/pay',array('id'=>$var['id']))}>">付款</a>
+         <else/>
+			 <eq name="var.is_offline" value="1">
+				 <a class="button button-small bg-green margin-top">已完成</a>
+				 <else/>
+				 <a class="button button-small bg-green margin-top">已完成(线下)</a>
+			 </eq>
+         </eq>
+
+
+         </p>
+      </dl>
+    </li>
+
+    <div class="blank-10 bg"></div>
+   </foreach>
+  </ul>
+</div>
+
+<div class="blank-20"></div>
+<div class="container login-open">
+<h5 style="text-align:center"><{$page}><!--分页代码不要忘记加--> </h5>
+</div>
+<script>
+	$(document).ready(function () {
+		$(document).on('click', ".jquery-delete", function (e) {
+			var id = $(this).attr('rel');
+			layer.confirm('您确定要删除？', {
+				skin: 'layer-ext-demo',
+				area: ['50%', 'auto'], //宽高
+				btn: ['是的', '不'], //按钮
+				shade: false //不显示遮罩
+			}, function () {
+				$.post("<{:U('pay/delete')}>", {id: id}, function (result) {
+					if (result.status == "success") {
+						layer.msg(result.msg);
+						setTimeout(function () {
+							location.reload();
+						}, 1000);
+					} else {
+						layer.msg(result.msg);
+					}
+				}, 'json');
+			});
+		});
+	});
+</script>
+
+<include file="public:footer"/>
