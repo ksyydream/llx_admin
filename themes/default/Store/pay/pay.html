@@ -1,0 +1,155 @@
+<include file='public:header'/>
+
+<header class="top-fixed bg-yellow bg-inverse">
+    <div class="top-back">
+        <a class="top-addr" href="<{:U('pay/index')}>"><i class="icon-angle-left"></i></a>
+    </div>
+    <div class="top-title">
+        线下支付
+    </div>
+</header>
+
+<form class="fabu-form" method="post" target="x-frame" action="<{:U('pay/check_pay')}>">
+    <input type="hidden" name="id" value="<{$detail.id}>">
+    <div class="blank-10 bg border-top"></div>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">商家</span>
+		<span class="x9">
+			<{$detail['shop_name']}>
+		</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">消费金额</span>
+            <span class="x9">
+                <{$detail['total']}>
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">优惠券抵扣</span>
+		<span class="x9">
+			-<{$detail['yhk']}>
+		</span>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">备注</span>
+		<span class="x9">
+			<{$detail['remark']}>
+		</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">赠品消费</span>
+		<span class="x9">
+		</span>
+        </div>
+    </div>
+
+    <if condition="$detail['zp']">
+        <div id="zp_info">
+
+            <div class="row">
+                <div class="line">
+                    <span class="x6" style="color:#999">赠品</span>
+                    <span class="x6" style="color:#999">数量</span>
+                </div>
+            </div>
+
+            <foreach name="detail['zp']" item="var">
+                <div class="row">
+                    <div class="line">
+                        <span class="x6" style="color:#999"><{$key}></span>
+                        <span class="x6" style="color:#999"><{$var}></span>
+                    </div>
+                </div>
+            </foreach>
+        </div>
+    </if>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">使用秀币</span>
+            <span class="x3">
+                <input type="number" name="integral" value="0" onblur="xiubi_blur()" class="text-input">
+            </span>
+            <span class="x6">
+                秀币余额:<a onclick="use_integral(this)" style="color:blue;"><{$integral}></a>
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="line">
+            <span class="x3">实付</span>
+		<span class="x9" id="shifu" style="color:red">
+            <{:round($detail["total"] - $detail["yhk"],2)}>
+		</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="blank-30"></div>
+        <if condition="$detail['status'] eq 1">
+            <button type="submit" class="button button-block button-big bg-dot" onclick="return check_pay()">线下支付</button>
+        <else />
+            <button type="submit" class="button button-block button-big bg-green" onclick="return false">已完成</button>
+        </if>
+        <div class="blank-30"></div>
+    </div>
+
+</form>
+
+<include file='public:footer'/>
+
+<script>
+    function use_integral(obj){
+        integral = parseInt('<{$integral}>');
+        total = (parseInt('<{$detail["total"]}>') - parseInt('<{$detail["yhk"]}>')) * 100;
+        if(integral <= total){
+            $("[name='integral']").val(integral)
+        }else{
+            $("[name='integral']").val(total)
+        }
+        shifu = parseInt('<{:round($detail["total"] - $detail["yhk"],2)}>');
+        shifu = shifu - parseInt($("[name='integral']").val())/100
+        $("#shifu").html(shifu);
+    }
+
+    function check_pay(){
+        integral = parseInt('<{$integral}>');
+        total = (parseInt('<{$detail["total"]}>') - parseInt('<{$detail["yhk"]}>')) * 100;
+        integral_input = $("[name='integral']").val()
+        if(integral_input < 0 || integral < integral_input || integral_input > total){
+            alert('请输入正确数量的秀币');
+            return false;
+        }
+    }
+
+    function xiubi_blur(){
+        integral_input = $("[name='integral']").val()?parseInt($("[name='integral']").val()):0
+//        $("[name='integral']").val(0)
+        integral = parseInt('<{$integral}>');
+        total = (parseInt('<{$detail["total"]}>') - parseInt('<{$detail["yhk"]}>')) * 100;
+        if(integral_input < 0 || integral < integral_input || integral_input > total){
+            alert('请输入正确数量的秀币');
+            $("[name='integral']").val(0)
+        }
+        shifu = parseInt('<{:round($detail["total"] - $detail["yhk"],2)}>');
+        shifu = parseInt('<{:round($detail["total"] - $detail["yhk"],2)}>') - parseInt($("[name='integral']").val())/100
+        $("#shifu").html(shifu.toFixed(2));
+    }
+</script>
