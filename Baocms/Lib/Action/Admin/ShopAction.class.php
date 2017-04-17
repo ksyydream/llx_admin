@@ -5,24 +5,32 @@ class ShopAction extends CommonAction
     private $edit_fields = array('user_id', 'cate_id', 'province_code', 'city_code', 'area_code', 'shop_name', 'mobile', 'logo', 'photo', 'addr', 'tel', 'extension', 'contact', 'tags', 'near', 'business_time', 'delivery_time', 'is_pei', 'orderby', 'lng', 'lat', 'price', 'is_ding', 'recognition', 'apiKey', 'mKey', 'partner', 'machine_code','service','service_audit','shop_class');
     private $fdcreate_fields = array('shop_id','province_code', 'city_code', 'area_code', 'fd_name', 'logo', 'photo', 'addr', 'tel','score', 'contact', 'tags', 'business_time','lng', 'lat');
     private $fdedit_fields = array('shop_id','province_code', 'city_code', 'area_code', 'fd_name', 'logo', 'photo', 'addr', 'tel','score', 'contact', 'tags', 'business_time','lng', 'lat');
-    
     public function index()
     {
         $Shop = D('Shop');
         import('ORG.Util.Page');
         // 导入分页类
         $map = array('closed' => 0, 'audit' => 1);
+        if ($_GET['p']){
+            $p=$_GET['p'];
+            session('p',$p);
+        }
         if ($keyword = $this->_param('keyword', 'htmlspecialchars')) {
             $map['shop_name|tel'] = array('LIKE', '%' . $keyword . '%');
             $this->assign('keyword', $keyword);
         }
-        if ($city_id = (int) $this->_param('city_id')) {
-            $map['city_id'] = $city_id;
-            $this->assign('city_id', $city_id);
+        
+        if ($province_code = (int) $this->_param('province_code')) {
+            $map['province_code'] = $province_code;
+            $this->assign('city_id', $province_code);
         }
-        if ($area_id = (int) $this->_param('area_id')) {
-            $map['area_id'] = $area_id;
-            $this->assign('area_id', $area_id);
+        if ($city_code = (int) $this->_param('city_code')) {
+            $map['city_code'] = $city_code;
+            $this->assign('city_id', $city_code);
+        }
+        if ($area_code = (int) $this->_param('area_code')) {
+            $map['area_code'] = $area_code;
+            $this->assign('area_id', $area_code);
         }
         if ($cate_id = (int) $this->_param('cate_id')) {
             $map['cate_id'] = array('IN', D('Shopcate')->getChildren($cate_id));
@@ -111,13 +119,18 @@ class ShopAction extends CommonAction
         if ($this->isPost()) {
             $data2 = $data = $this->createCheck();
             $obj = D('Shop');
+            $objfd = D('Shopfd');
             $details = $this->_post('details', 'SecurityEditorHtml');
             if ($words = D('Sensitive')->checkWords($details)) {
                 $this->baoError('商家介绍含有敏感词：' . $words);
             }
             $bank = $this->_post('bank', 'htmlspecialchars');
-            unset($data['near'], $data['price'], $data['business_time'], $data['delivery_time']);
+            unset($data['near'], $data['price'], $data['delivery_time']);
             if ($shop_id = $obj->add($data)) {
+                $data['details']=$details;
+                $data['shop_id']=$shop_id;
+                $data['create_time'] = date('Y-m-d H:i:s');
+                $objfd->add($data);
                 $wei_pic = D('Weixin')->getCode($shop_id, 1);
                 $wd = D('WeidianDetails');
                 $wdata['weidian_name'] = htmlspecialchars($data['shop_name']);
@@ -248,7 +261,9 @@ class ShopAction extends CommonAction
             $this->baoError('所在商圈不能为空');
         }*/
         $data['shop_name'] = htmlspecialchars($data['shop_name']);
-        if (empty($data['shop_name'])) {
+        $areaname=D('Narea')->where(array('code'=>$data['area_code']))->select();
+        $data['fd_name']=$areaname[0]['name'];
+        if (empty($data['fd_name'])) {
             $this->baoError('商铺名称不能为空');
         }
         $data['logo'] = htmlspecialchars($data['logo']);
@@ -329,7 +344,7 @@ class ShopAction extends CommonAction
                 unset($data['near'], $data['price'], $data['business_time']);
                 if (false !== $obj->save($data)) {
                     D('Shopdetails')->upDetails($shop_id, $ex);
-                    $this->baoSuccess('操作成功', U('shop/index'));
+                    $this->baoSuccess('操作成功', U('shop/index',array('p'=>session('p'))));
                 }
                 $this->baoError('操作失败');
             } else {
@@ -675,16 +690,25 @@ class ShopAction extends CommonAction
         import('ORG.Util.Page');
         // 导入分页类
         if ($keyword = $this->_param('keyword', 'htmlspecialchars')) {
-            $map['shop_name|tel'] = array('LIKE', '%' . $keyword . '%');
+            $maps['shop_name'] = array('LIKE', '%' . $keyword . '%');
+            $shop=D('Shop')->where($maps)->select();
+            foreach ($shop as $val){
+                $shop_id[$val['shop_id']]=$val['shop_id'];
+            }
+            $map['shop_id']=array('IN',$shop_id);
             $this->assign('keyword', $keyword);
         }
-        if ($city_id = (int) $this->_param('city_id')) {
-            $map['city_id'] = $city_id;
-            $this->assign('city_id', $city_id);
+    if ($province_code = (int) $this->_param('prin_code')) {
+            $map['province_code'] = $province_code;
+            $this->assign('city_id', $province_code);
         }
-        if ($area_id = (int) $this->_param('area_id')) {
-            $map['area_id'] = $area_id;
-            $this->assign('area_id', $area_id);
+        if ($city_code = (int) $this->_param('city_code')) {
+            $map['city_code'] = $city_code;
+            $this->assign('city_id', $city_code);
+        }
+        if ($area_code = (int) $this->_param('area_code')) {
+            $map['area_code'] = $area_code;
+            $this->assign('area_id', $area_code);
         }
         if ($cate_id = (int) $this->_param('cate_id')) {
             $map['cate_id'] = array('IN', D('Shopcate')->getChildren($cate_id));
@@ -878,7 +902,24 @@ class ShopAction extends CommonAction
             $this->baoError('请选择要关闭的分店');
         }
     }
-    
+    public function fddelete2($fd_id = 0)
+    {
+        if (is_numeric($fd_id) && ($fd_id = (int) $fd_id)) {
+            $obj = D('Shopfd');
+            $obj->where(array('fd_id' => $fd_id))->delete();
+            $this->baoSuccess('删除成功！', U('shop/fdlist'));
+        } else {
+            $fd_id = $this->_post('fd_id', false);
+            if (is_array($fd_id)) {
+                $obj = D('Shopfd');
+                foreach ($fd_id as $id) {
+                    $obj->save(array('fd_id' => $id))->delete();
+                }
+                $this->baoSuccess('删除成功！', U('shop/fdlist'));
+            }
+            $this->baoError('请选择要删除的分店');
+        }
+    }
     public function fdrecovery($fd_id = 0)
     {
         if (is_numeric($fd_id) && ($fd_id = (int) $fd_id)) {

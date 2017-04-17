@@ -49,9 +49,9 @@
                         </label>
                         <label>
                             <span>区域：</span>
-                            <select name="prin_id" id="prin_id"  class="select w100"></select>
-                             <select name="city_id" id="city_id"  class="select w100"></select>
-                            <select name="area_id" id="area_id"  class="select w100"></select>
+                            <select name="prin_code" id="prin_id"  class="select w100"></select>
+                             <select name="city_code" id="city_id"  class="select w100"></select>
+                            <select name="area_code" id="area_id"  class="select w100"></select>
                         </label>
                 <script src="<{:U('app/datas/cityarea')}>"></script>
                 <script>
@@ -60,50 +60,67 @@ var prin_code = <?php echo (int)$detail['province_code'];?>;
                 var city_id = <?php echo (int)$detail['city_code'];?>;
 
                 var area_id = <?php echo (int)$detail['area_code'];?>;
-                    function changeCity(cid){
-                        var area_str = '<option value="0">请选择.....</option>';
-                        for(a in cityareas.area){
-                           if(cityareas.area[a].city_id ==cid){
-                                if(area_id == cityareas.area[a].area_id){
-                                    area_str += '<option selected="selected" value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
-                                }else{
-                                     area_str += '<option value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
-                                }  
-                            }
+
+                function changeCity(pid){
+
+                    var city_str = '<option value="0">请选择.....</option>';
+
+                    for(a in cityareas.city){
+
+                       if(cityareas.city[a].provincecode ==pid){
+                            city_str += '<option value="'+cityareas.city[a].code+'">'+cityareas.city[a].name+'</option>';
                         }
-                        $("#prin_id").html(area_str);
+
                     }
-                    function changeCity(cid){
-                        var area_str = '<option value="0">请选择.....</option>';
-                        for(a in cityareas.area){
-                           if(cityareas.area[a].city_id ==cid){
-                                if(area_id == cityareas.area[a].area_id){
-                                    area_str += '<option selected="selected" value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
-                                }else{
-                                     area_str += '<option value="'+cityareas.area[a].area_id+'">'+cityareas.area[a].area_name+'</option>';
-                                }  
-                            }
+
+                    $("#city_id").html(city_str);
+                    $("#area_id").html('<option value="0">请选择.....</option>');
+
+                }
+                function changeArea(cid){
+
+                    var area_str = '<option value="0">请选择.....</option>';
+
+                    for(a in cityareas.area){
+
+                       if(cityareas.area[a].citycode ==cid){
+                            area_str += '<option value="'+cityareas.area[a].code+'">'+cityareas.area[a].name+'</option>';
                         }
-                        $("#area_id").html(area_str);
+
                     }
-                    $(document).ready(function(){
-                        var city_str = '<option value="0">请选择.....</option>';
-                        for(a in cityareas.city){
-                           if(city_id == cityareas.city[a].city_id){
-                               city_str += '<option selected="selected" value="'+cityareas.city[a].city_id+'">'+cityareas.city[a].name+'</option>';
-                           }else{
-                                city_str += '<option value="'+cityareas.city[a].city_id+'">'+cityareas.city[a].name+'</option>';
-                           }  
-                        }
-                        $("#city_id").html(city_str);
-                        if(city_id){
-                            changeCity(city_id);
-                        }
-                        $("#city_id").change(function(){
-                            city_id = $(this).val();
-                            changeCity($(this).val());
-                        });
-                    });
+
+                    $("#area_id").html(area_str);
+
+                }
+                $(document).ready(function(){
+                    var prin_str = '<option value="0">请选择.....</option>';
+
+                    for(a in cityareas.province){
+                            prin_str += '<option value="'+cityareas.province[a].code+'">'+cityareas.province[a].name+'</option>';
+                    }
+
+                    $("#prin_id").html(prin_str);
+
+                    if(province_code){
+
+                        changeCity(Nprovince_code);
+
+                    }
+
+
+                });
+                $("#prin_id").change(function(){
+                    prin_id = $(this).val();
+
+                    changeCity($(this).val());
+
+                });
+                $("#city_id").change(function(){
+                    area_id = $(this).val();
+
+                    changeArea($(this).val());
+
+                });
                 </script>
                         <label>
                             <span>关键字:</span>
@@ -134,7 +151,7 @@ var prin_code = <?php echo (int)$detail['province_code'];?>;
                     <tr>
                         <td><input class="child_fd_id" type="checkbox" name="fd_id[]" value="<{$var.fd_id}>" /></td>
                         <td><{$var.fd_id}></td>
-                        <td><{$var.shop_name}>(<{$var.shop_id}>)
+                        <td><eq name="var.shop_name" value=""><span style='color:red'>该商铺已下架</span><else/><{$var.shop_name}>(<{$var.shop_id}>)</eq>
                         </td>
                         <td>
                         名称：<{$var.fd_name}><br/>
@@ -173,17 +190,18 @@ var prin_code = <?php echo (int)$detail['province_code'];?>;
                     <{:BA('shop/fdrecovery',array("fd_id"=>$var["fd_id"]),'恢复','act','remberBtn_small')}>
                     </eq>
                     <a target="_blank" class="remberBtn_small" href="<{:U('shop/login',array('shop_id'=>$var['shop_id']))}>">管理</a>
+                    <{:BA('shop/fddelete2',array("fd_id"=>$var["fd_id"]),'删除','act','remberBtn_small')}>
                     </td>
                     </tr>
                 </foreach>
             </table>
             <{$page}>
         </div>
-        <div class="selectNr" style="margin-bottom: 0px; border-bottom: none;">
+        <!-- <div class="selectNr" style="margin-bottom: 0px; border-bottom: none;">
             <div class="left">
                 <{:BA('shop/delete','','批量删除','list',' a2')}>
             </div>
-        </div>
+        </div> -->
     </form>
 </div>
 </div>

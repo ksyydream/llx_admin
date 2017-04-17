@@ -1,0 +1,20 @@
+<include  file='public:header'/>
+
+<div class="mainBt">
+    <ul>
+        <li class="li1">商城</li>
+        <li class="li2">积分商城</li>
+        <li class="li2 li3">物流信息</li>
+    </ul>
+</div>
+<div class="mainScAdd ">
+<table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+<foreach name="data" item="dt">
+<tr><td class="w80"><{$dt['time']}></td>
+<td><{$dt['context']}></td>
+</tr>
+</foreach>
+<td colspan="2"><{:BA('llxgoods/orderlist','','返回','','remberBtn')}></td>
+</table>
+</div>
+<include  file='public:footer'/>       

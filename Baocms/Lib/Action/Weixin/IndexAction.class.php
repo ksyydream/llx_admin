@@ -276,7 +276,7 @@ class IndexAction extends CommonAction
 
         $shop = D('Shop')->find($shop_id);
 
-        $content[] = array($shop['shop_name'], $shop['addr'], $this->getImage($shop['photo']), __HOST__ . '/mobile/shop/detail/shop_id/' . $shop_id . '.html');
+        $content[] = array($shop['shop_name'], $shop['addr'], $this->getImage($shop['photo']),'http://llx.51loveshow.com/description?shop_id=' . $shop_id . '&back=1.html');
         $this->weixin->response($content, 'news');
 
 

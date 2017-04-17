@@ -14,6 +14,10 @@ class GoodsAction extends CommonAction {
         $Goods = D('Goods');
         import('ORG.Util.Page'); // 导入分页类
         $map = array('closed' => 0, 'is_mall' => 1);
+        if ($_GET['p']){
+            $p=$_GET['p'];
+            session('p',$p);
+        }
         if ($keyword = $this->_param('keyword', 'htmlspecialchars')) {
             $map['title'] = array('LIKE', '%' . $keyword . '%');
             $this->assign('keyword', $keyword);
@@ -211,7 +215,7 @@ class GoodsAction extends CommonAction {
                     if (!empty($photos)) {
                         D('Goodsphoto')->upload($goods_id, $photos);
                     }
-                    $this->baoSuccess('操作成功', U('goods/index'));
+                    $this->baoSuccess('操作成功', U('goods/index',array('p'=>session('p'))));
                 }
                 $this->baoError('操作失败');
             } else {

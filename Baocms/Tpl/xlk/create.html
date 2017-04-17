@@ -1,0 +1,135 @@
+<include  file='public:header'/>
+<style>
+    .yy_div{
+        margin-top: 1px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .yy_div ul li{
+        list-style: none;
+        float: left;
+    }
+
+</style>
+<div class="mainBt">
+    <ul>
+        <li class="li1">商家</li>
+        <li class="li2">序列卡</li>
+        <li class="li2 li3">生成序列卡</li>
+    </ul>
+</div>
+<form  target="baocms_frm" action="<{:U('xlk/create')}>" method="post">
+    <div class="mainScAdd">
+        <div class="tableBox">
+            <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;" >
+                <tr>
+                    <td class="lfTdBt">商家：</td>
+                    <td class="rgTdBt">
+                        <div class="lt">
+                            <input type="hidden" id="shop_id" name="data[shop_id]" value="<{$detail.shop_id|default=''}>"/>
+                            <input type="text" id="shop_name" name="shop_name" value="" class="scAddTextName w150 sj" />
+                        </div>
+                        <a mini="select"  w="1000" h="600" href="<{:U('shop/select')}>" class="seleSj">选择商家</a>
+                    </td>
+                </tr><tr>
+                    <td class="lfTdBt">标题：</td>
+                    <td class="rgTdBt"><input type="text" name="data[title]" value="<{$detail.title|default=''}>" class="scAddTextName w260" />
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">序列卡数量：</td>
+                    <td class="rgTdBt"><input type="text" name="data[card_count]" value="<{$detail.card_count|default=''}>" class="scAddTextName w260" />
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">优惠券：</td>
+                    <td class="rgTdBt"><input type="text" name="data[yhq]" value="<{$detail.yhq|default=''}>" class="scAddTextName w260" />
+
+                    </td>
+                </tr>
+                <link rel="stylesheet" href="__PUBLIC__/umeditor/themes/default/css/umeditor.min.css" type="text/css">
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+                <script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+                <script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+                <script>
+                        um = UM.getEditor('data_details', {
+                            imageUrl: "<{:U('app/upload/editor')}>",
+                            imagePath: '__ROOT__/attachs/editor/',
+                            lang: 'zh-cn',
+                            langPath: UMEDITOR_CONFIG.UMEDITOR_HOME_URL + "lang/",
+                            focus: false
+                        });
+                </script>
+               <tr>
+                    <td class="lfTdBt">有效期：</td>
+                    <td class="rgTdBt">
+                        <input type="text" name="data[valid_time]" value="<{$valid_time|default=''}>" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd'});"  class="text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">状态：</td>
+                    <td class="rgTdBt">
+                        <select name="data[flag]" id="flag" class="seleFl w100" style="display: inline-block; margin-right: 10px;">
+                            <option value="1">使用</option>
+                            <option value="2">停用</option>
+                            <option value="-1">弃用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">赠品：
+                        <button id="add_zp_btn" style="height: 40px;width: 100px" type="button" class="am-btn am-btn-primary">新增赠品</button>
+                    </td>
+                    <td class="rgTdBt" id="gg_list">
+                        <!--<div class="yy_div">
+                            <ul >
+                                <li>赠品名称:<input required style="width: 200px" type="text" name="desc[]"></li>
+                                <li>赠品数量<input required style="width: 100px" type="text" name="qty[]" ></li>
+                            </ul>
+                            <button name="del_btn" style="margin-left: 10px;height: 20px;" type="button" class="am-btn am-btn-default">删除</button>
+                        </div>-->
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="smtQr"><input type="submit" value="确认添加" class="smtQrIpt" /></div>
+    </div>
+</form>
+<script>
+    $("#add_zp_btn").click(function(){
+        //解绑事件
+        $("#gg_list").find("button").off('click');
+        $("[name='desc[]']").off('keyup').off('blur').off('paste');
+        $("[name='qty[]']").off('keyup').off('blur').off('paste');
+        //divbox=$("#gg_list").children().html();
+        //divbox.find("input").eq(0).val('');
+        divbox ="<ul>" +
+                "<li>赠品名称:<input required style='width: 200px' type='text' name='desc[]'></li> " +
+                "<li>赠品数量:<input required style='width: 100px' type='text' name='qty[]' ></li>" +
+                "</ul>"
+        divbox +="<button name='del_btn' style='margin-left: 10px;height: 20px;' type='button' class='am-btn am-btn-default'>删除</button>"
+        divbox="<div class='yy_div'>"+divbox+"</div>"
+        $('#gg_list').append(divbox);
+        //绑定事件
+        $("#gg_list").find("button").on('click',function () {
+            if($('#gg_list').children('div').length <= 0){
+                layer.msg('已无赠品信息');
+            }
+            else{
+                $(this).parent().remove();
+            }
+        })
+
+        $("[name='qty[]']").keyup(function () {
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).blur(function(){
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).bind("paste", function () {  //CTR+V事件处理
+            $(this).val($(this).val().replace(/[^0-9.]/g, ''));
+        }).css("ime-mode", "disabled"); //CSS设置输入法不可用
+    })
+</script>
+<include  file='public:footer'/>       

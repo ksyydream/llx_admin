@@ -384,69 +384,115 @@ class LlxGoodsAction extends CommonAction {
         $count = $Order->where($map)->count(); // 查询满足要求的总记录数
         $Page = new Page($count, 10); // 实例化分页类 传入总记录数和每页显示的记录数
         $show = $Page->show(); // 分页显示输出
-        $list = $Order->where($map)->order(array('jforder_id' => 'desc'))->limit($Page->firstRow . ',' . $Page->listRows)->select();
+        $o_list = $Order->where($map)->order(array('jforder_id' => 'desc'))->limit($Page->firstRow . ',' . $Page->listRows)->select();
         $user_ids = $order_ids = $shop_ids = $addr_ids = array();
-        foreach ($list as $key => $val) {
+        foreach ($o_list as $key => $val) {
+            $list[$val['jforder_id']]=$val;
             $user_ids[$val['user_id']] = $val['user_id'];
             $order_ids[$val['jforder_id']] = $val['jforder_id'];
             $addr_ids[$val['jforder_id']] = D('Jforderaddr')->where(array('jforder_id'=>$val['jforder_id']))->find();
+            $province=D('Nprovince')->where(array('code'=>$addr_ids[$val['jforder_id']]['province_code']))->find();
+            $list[$val['jforder_id']]['province']=$province['name'];
+            $city=D('Ncity')->where(array('code'=>$addr_ids[$val['jforder_id']]['city_code']))->find();
+            $list[$val['jforder_id']]['city']=$city['name'];
+            $area=D('Narea')->where(array('code'=>$addr_ids[$val['jforder_id']]['area_code']))->find();
+            $list[$val['jforder_id']]['area']=$area['name'];
         }
-        //echo D('Jforderaddr')->getLastSql();
-        //print_r($list);
-
-        $vasda=D('Goods')->where(array('goods_id'=>124))->select();
-        //print_r($addr_ids);
+        
         if (!empty($order_ids)) {
-            $goods = D('Ordergoods')->where(array('order_id' => array('IN', $order_ids)))->select();
+            $goods = D('jf_order_goods')->where(array('jforder_id' => array('IN', $order_ids)))->select();
             $goods_ids = array();
-            foreach ($goods as $val) {
-                $goods_ids[$val['goods_id']] = $val['goods_id'];
+            foreach ($goods as $k=>$val) {
+                $goods_ids[$val['jforder_id']] = $val;
             }
-            $this->assign('goods', $goods);
-            $this->assign('products', D('Goods')->itemsByIds($goods_ids));
+            $this->assign('goods', $goods_ids);
+            $this->assign('products', D('Llxgoods')->where(array('jfgoods_id'=>array('IN', $goods_ids)))->select());
         }
-        //$this->assign('shops', D('Shop')->itemsByIds($shop_ids));
+        
+        /*$express = $this->_post('express');
+        $kd_num = $this->_post('kd_num');
+        $result = $this->getcontent("http://www.kuaidi100.com/query?type={$express}&postid={$kd_num}");
+        $obj=json_decode($result);*/
+        
+        
+        
+        
+        $this->assign('exp', D('Expcmp')->select());
         $this->assign('addrs', $addr_ids);
-        $this->assign('prin', D('Nprovince')->fetchAll());
-        $this->assign('area', D('Narea')->fetchAll());
-        $this->assign('city', D('Ncity')->fetchAll());
         $this->assign('users', D('Users')->itemsByIds($user_ids));
         $this->assign('types', D('Order')->getType());
         $this->assign('goodtypes', D('Ordergoods')->getType());
         $this->assign('list', $list); // 赋值数据集
         $this->assign('page', $show); // 赋值分页输出
         $this->display();
+    }
+    
+    public function orderexpress(){
+        $map['jforder_id']=$this->_POST('jfoid');
+        $order=D('Jforder');
+        $detail=$order->where($map)->find();
+        if (!$detail['fdate']&& !$detail['kd_num'] && !$detail['express']){
+            $data['express']=$this->_POST('expcmp');
+            if (empty($data['express'])){
+                $this->baoError('请选择快递公司');
+            }
+            $data['kd_num']=$this->_post('kd_num', 'htmlspecialchars');
+            if (empty($data['kd_num'])){
+                $this->baoError('请填写快递单号');
+            }
+            $express=D('Expcmp')->where(array('express'=>$data['express']))->find();
+            $data['express_name']=$express['name'];
+            $data['fdate']=date('y-m-d h:i:s',time());;
+            $data['status']=3;
+            if ($order->where($map)->save($data)){
+                $this->baoSuccess('发货成功',U('llxgoods/orderlist'));
+            }
+            $this->baoError('操作失败');
+        }else {
+            $this->baoError('该订单已发货');
+        }
+    }
+    
+    private function getcontent($url){
+        if(function_exists("file_get_contents")){
+            $file_contents = file_get_contents($url);
+        }else{
+            $ch = curl_init();
+            $timeout = 5;
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+            $file_contents = curl_exec($ch);
+            curl_close($ch);
+        }
+        return $file_contents;
+    }
+    
+    public function expressadr($kd_num=0,$express=""){
+            $result = $this->getcontent("http://www.kuaidi100.com/query?type={$express}&postid={$kd_num}");
+            $obj=json_decode($result,true);
+            if($obj['message']=='ok'){
+                /*$rs = array(
+                    'success' => true,
+                    'data' =>$obj->data,
+                    'state'=>$obj->state,
+                    'error_msg'=>''
+                );*/
+                $this->assign('data' ,$obj['data']);
+                $this->assign('state',$obj['state']);
+            }else{
+                $this->baoError('获取失败');
+                /*$rs = array(
+                    'success' => false,
+                    'data' =>$obj->data,
+                    'error_msg'=>'获取失败'
+                );
+                $this->ajaxReturn($rs,'JSON');*/
+            }
+            $this->display();
         
         
         
     }
     
-    
-    /*public function audit($goods_id = 0) {
-        if (is_numeric($goods_id) && ($goods_id = (int) $goods_id)) {
-            $obj = D('Goods');
-            $r = $obj -> where('goods_id ='.$goods_id) -> find();
-            if(empty($r['settlement_price'])){
-                $this->baoError('不设置结算价格无法审核通过！');
-            }
-            $obj->save(array('goods_id' => $goods_id, 'audit' => 1));
-            $this->baoSuccess('审核成功！', U('goods/index'));
-        } else {
-            $goods_id = $this->_post('goods_id', false);
-            if (is_array($goods_id)) {
-                $obj = D('Goods');
-                $error = 0;
-                foreach ($goods_id as $id) {
-                    $r = $obj -> where('goods_id ='.$id) -> find();
-                    if(empty($r['settlement_price'])){
-                        $error++;
-                        $this->baoError('遇到了结算价格没有设置的，该条无法审核通过！');
-                    }
-                    $obj->save(array('goods_id' => $id, 'audit' => 1));
-                }
-                $this->baoSuccess('审核成功！'.$error.'条失败', U('goods/index'));
-            }
-            $this->baoError('请选择要审核的商品');
-        }
-    }*/
 }

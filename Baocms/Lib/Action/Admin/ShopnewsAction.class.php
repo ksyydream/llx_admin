@@ -32,6 +32,7 @@ class ShopnewsAction extends CommonAction {
         $count = $Shopnews->where($map)->count(); // 查询满足要求的总记录数 
         $Page = new Page($count, 25); // 实例化分页类 传入总记录数和每页显示的记录数
         $show = $Page->show(); // 分页显示输出
+        //die(var_dump($Page));
         $list = $Shopnews->where($map)->order(array(  'news_id'=>'desc'))->limit($Page->firstRow . ',' . $Page->listRows)->select();
         $shop_ids = array();
         foreach($list as $k=>$val){

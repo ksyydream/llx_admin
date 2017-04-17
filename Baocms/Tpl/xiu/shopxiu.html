@@ -1,0 +1,60 @@
+
+<include  file='public:header'/>
+
+<div class="mainBt">
+    <ul>
+        <li class="li1">商家</li>
+        <li class="li2">秀管理</li>
+        <li class="li2 li3">个人秀管理</li>
+    </ul>
+</div>
+<div class="main-jsgl main-sc">
+    <p class="attention"><span>注意：</span>商家必须入住了商城才能发布产品，前台添加，后台审核！</p>
+    <div class="jsglNr">
+        <div class="selectNr" style="margin-top: 0px; border-top:none;">
+            <div class="right">
+                <form method="post" action="<{:U('xiu/shopxiu')}>">
+                    <div class="seleHidden" id="seleHidden">
+                        <div class="seleK">
+                        <span>  关键字：</span>  
+                        <input type="text" name="keyword" value="<{$keyword|default=''}>" class="inptText" /><input type="submit" class="inptButton" value="  搜索" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <form  target="baocms_frm" method="post">
+            <div class="tableBox">
+                <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+                    <tr bgcolor="#FAE2E2" height="48px;" style="color:#333; font-size:16px; line-height:48px; text-align:center;">
+                        <td>id</td>
+                        <td>发送商铺(id)</td>
+                        <td>秀消息</td>
+                        <td>秀图片</td>
+                        <td>评论条数 </td>
+                        <td>操作</td>
+                    </tr>
+
+                    <foreach name="list" item="var">
+                        <tr bgcolor="#f1f1f1" height="48px" style="font-size:14px; color:#545454;  text-align:center; line-height:48px;">
+                            <td style="width:40px;"><{$var.id}></td>
+                            <td style="width:110px;"><{$var.shop_name}>(<{$var.shop_id}>)</td>
+                            <td><{$var.remark}></td>
+                            <td>
+                            <foreach name="var.files" item="k"><eq name="k.flag" value="1"><img src="__ROOT__/attachs/<{$k.path}>" class="w200" />
+                            <else/>
+                            <video src="__ROOT__/attachs/<{$k.path}>" height='200px' width="200px" controls="controls">your browser does not support the video tag</video>
+							</eq></foreach></td>
+                            <td><{$var.hf_count}>  <a href='hf_detail'>详细</a></td>
+                            <td style="text-align:center;">
+                        <{:BA('xiu/delete',array("id"=>$var["id"]),'删除','act','remberBtn')}>
+                        </td>
+                        </tr>
+                    </foreach> 
+                </table>
+                <{$page}>
+            </div>
+        </form>
+    </div>
+    <include  file='public:footer'/>    

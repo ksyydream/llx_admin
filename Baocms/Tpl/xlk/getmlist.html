@@ -1,0 +1,71 @@
+
+<include  file='public:header'/>
+
+<div class="mainBt">
+    <ul>
+        <li class="li1">商家</li>
+        <li class="li2">序列卡</li>
+        <li class="li2 li3">序列卡管理</li>
+    </ul>
+</div>
+<div class="main-jsgl main-sc">
+    <p class="attention"><span>注意：</span>商家必须入住了商城才能生成序列卡，前台添加，后台审核！</p>
+    <div class="jsglNr">
+        <div class="selectNr" style="margin-top: 0px; border-top:none;">
+            <div class="right">
+                <form method="post" action="<{:U('xlk/getmlist')}>">
+                    <div class="seleHidden" id="seleHidden">
+                        <div class="seleK">
+                        <span>  关键字：</span>  
+                        <input type="text" name="keyword" value="<{$keyword|default=''}>" class="inptText" /><input type="submit" class="inptButton" value="  搜索" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <form  target="baocms_frm" method="post">
+            <div class="tableBox">
+                <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+                    <tr bgcolor="#FAE2E2" height="48px;" style="color:#333; font-size:16px; line-height:48px; text-align:center;">
+                        <td>id</td>
+                        <td>商铺(id)</td>
+                        <td>序列卡标题</td>
+                        <td>序列卡数量 </td>
+                        <td>优惠券</td>
+                        <td>赠品</td>
+                        <td>有效期</td>
+                        <td>状态</td>
+                        <td>操作</td>
+                    </tr>
+
+                    <foreach name="list" item="var">
+                        <tr bgcolor="#f1f1f1" height="48px" style="font-size:14px; color:#545454;  text-align:center; line-height:48px;">
+                            <td style="width:40px;"><{$var.id}></td>
+                            <td style="width:110px;"><{$var.shop_name}>(<{$var.shop_id}>)</td>
+                            <td><{$var.title}></td>
+                            <td><{$var.card_count}></td>
+                            <td><{$var.yhq}></td>
+                            <td>
+                                <foreach name="var.zp" item="k">
+                                    <span><{$k.desc}>:<{$k.qty}></span><br>
+                                </foreach>
+                            </td>
+                            <td><{$var.valid_time}></td>
+                            <td>
+                                <eq name="var.flag" value="1">使用中</eq>
+                                <eq name="var.flag" value="2">停用</eq>
+                                <eq name="var.flag" value="-1">弃用</eq>
+                            </td>
+                            <td style="text-align:center;">
+                                <{:BA('xlk/edit',array("id"=>$var["id"]),'编辑','','remberBtn')}>
+                                <{:BA('xlk/load_excel',array("id"=>$var["id"]),'导出','','remberBtn')}>
+                        </td>
+                        </tr>
+                    </foreach>
+                </table>
+                <{$page}>
+            </div>
+        </form>
+    </div>
+    <include  file='public:footer'/>    

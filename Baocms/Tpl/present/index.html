@@ -1,0 +1,57 @@
+<include  file='public:header'/>
+
+<div class="mainBt">
+    <ul>
+        <li class="li1">设置</li>
+        <li class="li2">基本设置</li>
+        <li class="li2 li3">礼物设置</li>
+    </ul>
+</div>
+<div class="main-cate">
+    <div class="jsglNr">
+        <div class="selectNr" style="border-top: 1px solid #dbdbdb;">
+            <div class="left">
+                <{:BA('present/create','','添加礼物','load','',600,550)}>
+            </div>
+        </div>
+
+        <div class="tableBox">
+            <form  target="baocms_frm" method="post">
+                <table bordercolor="#dbdbdb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF; text-align:center;">
+                    <tr bgcolor="#FAE2E2" height="48px;" style="color:#333; font-size:16px; line-height:48px;">
+                        <td>名称</td>
+                        <td>价格</td>
+                        <td>赠送获得(秀币)</td>
+                        <td>图片</td>
+                        <td>操作</td>
+                    </tr>
+
+                    <foreach name="list" item="var">
+                        <tr bgcolor="#f1f1f1" height="48px" style="font-size:14px; color:#545454; text-align:left; line-height:48px;">
+                            <td style="padding-left:20px;"><{$var.name}>(<{$var.id}>)</td>
+                            <td style="padding-left:60px;width:90px;"><{$var.price}></td>
+                            <td style="padding-left:60px;width:90px;"><{$var.get_price}></td>
+                            <td style="padding-left:120px;padding-top:20px;width:200px;"><img src="__ROOT__/attachs/<{$var.img}>" class="w80" /></td>
+                            <td style="text-align:center;">
+                        <{:BA('present/edit',array("id"=>$var["id"]),'编辑','load','remberBtn',600,550)}>
+                        <eq name="var.status" value="1">
+                        <{:BA('present/close',array("id"=>$var["id"]),'停用','act','remberBtn')}>
+                        <else/>
+                        <{:BA('present/open',array("id"=>$var["id"]),'启用','act','remberBtn')}></eq>
+                        <{:BA('present/delete',array("id"=>$var["id"]),'删除','act','remberBtn')}>
+                        </td>
+                        </tr>
+                    </foreach>     
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<include  file='public:footer'/>
+
+
+
+
+
+
+

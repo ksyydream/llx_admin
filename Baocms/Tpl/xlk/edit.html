@@ -1,0 +1,114 @@
+<include  file='public:header'/>
+<style>
+    .yy_div{
+        margin-top: 1px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .yy_div ul li{
+       /* list-style: none;
+        float: left;*/
+    }
+
+</style>
+<div class="mainBt">
+    <ul>
+        <li class="li1">商家</li>
+        <li class="li2">序列卡</li>
+        <li class="li2 li3">序列卡详情</li>
+    </ul>
+</div>
+<form  target="baocms_frm"  action="<{:U('xlk/xlk_save','','')}>" method="post">
+    <input type="hidden" name="id" value="<{$id}>">
+    <div class="mainScAdd">
+        <div class="tableBox">
+            <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;" >
+                <tr>
+                    <td class="lfTdBt">商家：</td>
+                    <td class="rgTdBt">
+                        <{$master.shop_name}>(<{$master.shop_id}>)
+                    </td>
+                </tr><tr>
+                    <td class="lfTdBt">标题：</td>
+                    <td class="rgTdBt">
+                        <{$master.title}>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">序列卡数量：</td>
+                    <td class="rgTdBt">
+                        <{$master.card_count}>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">优惠券：</td>
+                    <td class="rgTdBt">
+                        <{$master.yhq}>
+                    </td>
+                </tr>
+
+               <tr>
+                    <td class="lfTdBt">有效期：</td>
+                    <td class="rgTdBt">
+                        <input type="text" name="data[valid_time]" value="<{$master.valid_time|default=''}>" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd'});"  class="text" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">状态：</td>
+                    <td class="rgTdBt">
+                        <select name="data[flag]" id="flag" class="seleFl w100" style="display: inline-block; margin-right: 10px;">
+                            <option value="1" <eq name="master.flag" value="1">selected</eq>>使用</option>
+                            <option value="2" <eq name="master.flag" value="2">selected</eq>>停用</option>
+                            <option value="-1" <eq name="master.flag" value="-1">selected</eq>>弃用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="lfTdBt">赠品：</td>
+                    <td class="rgTdBt" id="gg_list">
+                        <div class="yy_div">
+                            <ul>
+                                <foreach name="master.zp" item="k">
+                                    <li><{$k.desc}>:<{$k.qty}></li>
+                                </foreach>
+                            </ul>
+
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="smtQr"><input type="submit" value="确认修改" class="smtQrIpt" /></div>
+    </div>
+</form>
+<div style="overflow-y:auto;width: 98%">
+    <table bordercolor="#e1e6eb" cellspacing="0" width="100%" border="1px"  style=" border-collapse: collapse; margin:0px; vertical-align:middle; background-color:#FFF;"  >
+        <tr bgcolor="#FAE2E2" height="48px;" style="color:#333; font-size:16px; line-height:48px; text-align:center;">
+            <td>id</td>
+            <td>序列卡 卡号</td>
+            <td>使用时间</td>
+            <td>用户昵称--用户电话 </td>
+            <td>状态</td>
+        </tr>
+
+        <foreach name="list" item="var">
+            <tr bgcolor="#f1f1f1" height="48px" style="font-size:14px; color:#545454;  text-align:center; line-height:48px;">
+                <td style="width:40px;"><{$var.id}></td>
+                <td style="width:110px;"><{$var.xlh}></td>
+                <td><{$var.used_time}></td>
+                <td><{$var.nickname}>--<{$var.account}></td>
+                <td>
+                    <eq name="var.flag" value="1">使用中</eq>
+                    <eq name="var.flag" value="2">停用</eq>
+                    <eq name="var.flag" value="-1">弃用</eq>
+                </td>
+            </tr>
+        </foreach>
+    </table>
+</div>
+<script>
+
+</script>
+<include  file='public:footer'/>       
